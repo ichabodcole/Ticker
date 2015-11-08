@@ -1,6 +1,6 @@
 {
-  "name": "ticker",
-  "version": "0.0.1",
+  "name": "@ichabodcole/ticker",
+  "version": "0.0.2",
   "author": "Cole Reed",
   "description": "Fire a tick event every X milliseconds",
   "filename": "ticker",
@@ -11,6 +11,7 @@
     ]
   },
   "scripts": {
+    "start": "gulp tdd",
     "test": "gulp test"
   },
   "keywords": [
