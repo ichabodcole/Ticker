@@ -1,4 +1,4 @@
-import { Ticker, TickerEvent } from '../lib/ticker';
+import { Ticker, TickerEvent } from '../src/Ticker';
 
 
 describe ('Ticker', function () {
@@ -8,9 +8,11 @@ describe ('Ticker', function () {
         update = function ( ) {
             return true;
         };
+
         options = {
             interval: 50
-        }
+        };
+
         tk = new Ticker(options);
     });
 
@@ -28,8 +30,8 @@ describe ('Ticker', function () {
             describe('the default state', function() {
                 it('should be STOPPED', function() {
                     expect(tk.state).toBe(Ticker.STOPPED);
-                })
-            })
+                });
+            });
 
             describe ('after calling ticker.stop', function() {
                 it ('should return Ticker.STOPPED', function() {
@@ -77,7 +79,7 @@ describe ('Ticker', function () {
                 tk.interval = 100;
                 //
                 expect(tk.createInterval.calls.count()).toBe(2);
-            })
+            });
 
             it ('should not update the setInterval period if the Ticker is not TICKING', function() {
                 spyOn(tk, 'createInterval');
