@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'phantomjs-shim', 'browserify'],
+    frameworks: ['jasmine', 'browserify'],
 
 
     // list of files / patterns to load in the browser
@@ -28,8 +28,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'src/**/*.js': ['jshint', 'browserify'],
-        'test/**/*.spec.js': ['jshint', 'browserify']
+        'src/**/*.js': ['eslint', 'browserify'],
+        'test/**/*.spec.js': ['eslint', 'browserify']
     },
 
     // test results reporter to use
@@ -57,22 +57,24 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ['jsdom'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,
 
-
-    // Custom preprocessor configuration
-    jshintPreprocessor: {
-      jshintrc: './.jshintrc'
+    eslint: {
+        engine: {
+          configFile: './.eslintrc'
+        }
     },
 
     browserify: {
         debug: true,
-        transform: [['babelify', { 'presets': ['es2015'] }]]
+        transform: [
+            ['babelify', { 'presets': ['env'] }]
+        ]
     }
   });
 };
