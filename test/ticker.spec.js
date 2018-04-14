@@ -1,173 +1,128 @@
-import { Ticker, TickerEvent } from '../src/Ticker';
+import { Ticker, TickerEvent, TickerState } from '../src/Ticker'
 
+describe('Ticker', function () {
+  let tk
 
-describe ('Ticker', function () {
-    var tk, options, update;
+  beforeEach(function () {
+    tk = new Ticker(50)
+  })
 
+  describe('constructor', function () {
+    it('should not throw', function () {
+      expect(function () {
+        return new Ticker()
+      }).not.toThrow()
+    })
+  })
+
+  describe('properties', function () {
+    describe('state', function () {
+      describe('the default state', function () {
+        it('should be STOPPED', function () {
+          expect(tk.state).toBe(TickerState.STOPPED)
+        })
+      })
+
+      describe('after calling ticker.stop', function () {
+        it('should return TickerState.STOPPED', function () {
+          tk.start()
+          tk.stop()
+          expect(tk.state).toBe(TickerState.STOPPED)
+        })
+      })
+
+      describe('after calling ticker.start', function () {
+        it('should return TickerState.TICKING', function () {
+          tk.start()
+          expect(tk.state).toBe(TickerState.TICKING)
+        })
+      })
+    })
+
+    describe('interval', function () {
+      it('should get the ticker models interval value', function () {
+        expect(tk.interval).toBe(50)
+      })
+    })
+  })
+
+  describe('methods', function () {
     beforeEach(function () {
-        update = function ( ) {
-            return true;
-        };
+      jasmine.clock().install()
+    })
 
-        options = {
-            interval: 50
-        };
+    afterEach(function () {
+      jasmine.clock().uninstall()
+    })
 
-        tk = new Ticker(options);
-    });
+    describe('start', function () {
+      it('should be defined', function () {
+        expect(tk.start).toBeDefined()
+      })
 
-    describe ('constructor', function () {
-        it ('should not throw', function () {
-            expect(function ( ) {
-                new Ticker();
-            }).not.toThrow();
-        });
-    });
+      it('should set the state variable to TICKING', function () {
+        tk.start()
+        expect(tk.state).toBe(TickerState.TICKING)
+      })
 
-    describe ('properties', function() {
+      it('should emit the START event', function () {
+        spyOn(tk, 'emit')
+        tk.start()
+        expect(tk.emit).toHaveBeenCalledWith(TickerEvent.START)
+      })
 
-        describe ('state', function() {
-            describe('the default state', function() {
-                it('should be STOPPED', function() {
-                    expect(tk.state).toBe(Ticker.STOPPED);
-                });
-            });
+      it('should call the tick method every (n)milliseconds based on the interval', function () {
+        spyOn(tk, 'tick')
+        tk.start()
+        jasmine.clock().tick(55)
+        expect(tk.tick).toHaveBeenCalled()
+      })
+    })
 
-            describe ('after calling ticker.stop', function() {
-                it ('should return Ticker.STOPPED', function() {
-                    tk.start();
-                    tk.stop();
-                    expect(tk.state).toBe(Ticker.STOPPED);
-                });
-            });
+    describe('stop', function () {
+      it('should be defined', function () {
+        expect(tk.stop).toBeDefined()
+      })
 
-            describe ('after calling ticker.start', function() {
-                it ('should return Ticker.TICKING', function() {
-                    tk.start();
-                    expect(tk.state).toBe(Ticker.TICKING);
-                });
-            });
-        });
+      it('should change the state value to STOPPED', function () {
+        tk.start()
+        tk.stop()
+        expect(tk.state).toBe(TickerState.STOPPED)
+      })
 
-        describe ('interval', function() {
-            it ('should set the ticker models interval value', function() {
-                tk.interval = 100;
-                expect(tk.model.interval).toBe(100);
-            });
+      it('should stop calling the tick method', function () {
+        spyOn(tk, 'tick')
+        tk.start()
+        tk.stop()
+        jasmine.clock().tick(55)
+        expect(tk.tick).not.toHaveBeenCalled()
+      })
 
-            it ('should get the ticker models interval value', function() {
-                tk.model.interval = 100;
-                expect(tk.interval).toBe(100);
-            });
+      it('should emit the STOP event', function () {
+        spyOn(tk, 'emit')
+        tk.stop()
+        expect(tk.emit).toHaveBeenCalledWith(TickerEvent.STOP)
+      })
+    })
 
-            it ('should update the setInterval interval period', function() {
-                spyOn(tk, 'tick');
+    describe('tick', function () {
+      it('should broadcast the TICK event', function () {
+        spyOn(tk, 'emit')
+        tk.tick()
+        expect(tk.emit).toHaveBeenCalledWith(TickerEvent.TICK)
+      })
+    })
 
-                jasmine.clock().install();
-                tk.start();
-                jasmine.clock().tick(100);
-                tk.interval = 100;
-                jasmine.clock().tick(100);
+    describe('on', function () {
+      it('should be defined', function () {
+        expect(tk.on).toBeDefined()
+      })
+    })
 
-                expect(tk.tick.calls.count()).toBe(3);
-                jasmine.clock().uninstall();
-            });
-
-            it ('should create an new interval if the Ticker is TICKING', function() {
-                spyOn(tk, 'createInterval');
-                tk.start();
-                tk.interval = 100;
-                //
-                expect(tk.createInterval.calls.count()).toBe(2);
-            });
-
-            it ('should not update the setInterval period if the Ticker is not TICKING', function() {
-                spyOn(tk, 'createInterval');
-                tk.start();
-                tk.stop();
-                tk.interval = 100;
-                expect(tk.createInterval.calls.count()).toBe(1);
-            });
-        });
-    });
-
-    describe ('methods', function () {
-        beforeEach(function () {
-            jasmine.clock().install();
-        });
-
-        afterEach(function () {
-            jasmine.clock().uninstall();
-        });
-
-        describe ('start', function () {
-            it ('should be defined', function ( ){
-                expect(tk.start).toBeDefined();
-            });
-
-            it ('should set the state variable to TICKING', function() {
-                tk.start();
-                expect(tk.state).toBe(Ticker.TICKING);
-            });
-
-            it ('should emit the START event', function () {
-                spyOn(tk, 'emit');
-                tk.start();
-                expect(tk.emit).toHaveBeenCalledWith(TickerEvent.START);
-            });
-
-            it ('should call the tick method every (n)milliseconds based on the interval', function ( ) {
-                spyOn(tk, 'tick');
-                tk.start();
-                jasmine.clock().tick(55);
-                expect(tk.tick).toHaveBeenCalled();
-            });
-        });
-
-        describe ('stop', function () {
-            it ('should be defined', function ( ) {
-                expect(tk.stop).toBeDefined();
-            });
-
-            it ('should change the state value to STOPPED', function() {
-                tk.start();
-                tk.stop();
-                expect(tk.state).toBe(Ticker.STOPPED);
-            });
-
-            it ('should stop calling the tick method', function () {
-                spyOn(tk, 'tick');
-                tk.start();
-                tk.stop();
-                jasmine.clock().tick(55);
-                expect(tk.tick).not.toHaveBeenCalled();
-            });
-
-            it ('should emit the STOP event', function () {
-                spyOn(tk, 'emit');
-                tk.stop();
-                expect(tk.emit).toHaveBeenCalledWith(TickerEvent.STOP);
-            });
-        });
-
-        describe ('tick', function () {
-            it ('should broadcast the TICK event', function () {
-                spyOn(tk, 'emit');
-                tk.tick();
-                expect(tk.emit).toHaveBeenCalledWith(TickerEvent.TICK);
-            });
-        });
-
-        describe ('on', function () {
-            it ('should be defined', function ( ) {
-                expect(tk.on).toBeDefined();
-            });
-        });
-
-        describe ('removeListener', function () {
-            it ('should be defined', function () {
-                expect(tk.removeListener).toBeDefined();
-            });
-        });
-    });
-});
+    describe('removeListener', function () {
+      it('should be defined', function () {
+        expect(tk.removeListener).toBeDefined()
+      })
+    })
+  })
+})
