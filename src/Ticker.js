@@ -1,76 +1,64 @@
-var EventEmitter = require('events').EventEmitter;
+import EventEmitter from 'eventemitter3'
 
-// Ticker event types
-var TickerEvent = {
-    TICK: 'ticker:tick',
-    START: 'ticker:start',
-    STOP: 'ticker:stop'
-};
+// Ticker Event Types
+const TickerEvent = {
+  TICK: 'TICK',
+  START: 'START',
+  STOP: 'STOP'
+}
+
+// Ticker States
+const TickerState = {
+  STOPPED: 'STOPPED',
+  TICKING: 'TICKING'
+}
 
 class Ticker extends EventEmitter {
-    constructor(options={}) {
-        super();
-        // Allow option to override events object if desired.
-        this.model = Object.assign({}, options.model || {});
-        // Initialize Model
-        this.tickInterval = null;
-        this.interval = options.interval || 50;
-        this.state = Ticker.STOPPED;
-    }
+  constructor (interval = 50) {
+    super()
+    this._intervalId = null
+    this._interval = interval
 
-    start () {
-        this.state = Ticker.TICKING;
-        this.createInterval();
-        this.emit(TickerEvent.START);
-    }
+    this.state = null
+    this.state = TickerState.STOPPED
+  }
 
-    stop () {
-        this.state = Ticker.STOPPED;
-        this.destroyInterval();
-        this.emit(TickerEvent.STOP);
-    }
+  start () {
+    this.state = TickerState.TICKING
+    this.__createInterval()
+    this.emit(TickerEvent.START)
+  }
 
-    tick () {
-        this.emit(TickerEvent.TICK);
-    }
+  stop () {
+    this.state = TickerState.STOPPED
+    this.__destroyInterval()
+    this.emit(TickerEvent.STOP)
+  }
 
-    createInterval () {
-        this.destroyInterval();
-        this.tickInterval = setInterval(this.tick.bind(this), this.interval);
-    }
+  tick () {
+    this.emit(TickerEvent.TICK)
+  }
 
-    destroyInterval() {
-        if (this.tickInterval) {
-            clearInterval(this.tickInterval);
-            this.tickInterval = null;
-        }
-    }
+  __createInterval () {
+    this.__destroyInterval()
+    this._intervalId = setInterval(this.tick.bind(this), this._interval)
+  }
 
-    set interval(milliseconds) {
-        this.model.interval = milliseconds;
-        if(this.state === Ticker.TICKING) {
-            this.createInterval();
-        }
+  __destroyInterval () {
+    if (this._intervalId) {
+      clearInterval(this._intervalId)
+      this._intervalId = null
     }
+  }
 
-    get interval() {
-        return this.model.interval;
-    }
-
-    set state(state) {
-        this.model.state = state;
-    }
-
-    get state() {
-        return this.model.state;
-    }
+  get interval () {
+    return this._interval
+  }
 }
-// Ticker states
-Ticker.STOPPED = 'stopped';
-Ticker.TICKING = 'ticking';
 
-export default Ticker;
+export default Ticker
 export {
-    TickerEvent,
-    Ticker
-};
+  TickerEvent,
+  TickerState,
+  Ticker
+}
