@@ -2,7 +2,7 @@
   "name": "@ichabodcole/ticker",
   "version": "1.0.0",
   "author": "Cole Reed",
-  "description": "Fire a tick event every X milliseconds",
+  "description": "A simple TICK emitter. So you can TICK when you TOCK.",
   "filename": "ticker",
   "main": "lib/ticker.js",
   "scripts": {
