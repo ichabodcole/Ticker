@@ -11,20 +11,33 @@ A simple `TICK` emitter.  So you can `TICK` when you `TOCK`.
 
     import {
       Ticker,
-      TickerEvent, // TICK | STOP
-      TickerState  // TICKING | STOPPED
+      TickerEvent, { type: TickerEvent }
+      TickerEventTypes, // START | TICK | STOP
+      TickerStates,  // TICKING | STOPPED
     } from '@ichabodcole/ticker'
 
-    // The Timer constructor takes an interval
+    // The Ticker constructor takes an interval
     // in milliseconds; defaults to 50.
+    const ticker = new Ticker(100)
 
-    const timer = new Timer(100)
+    // Do your cool biznis every 100 milliseconds 4EVRRRR
+    function myCoolBiznis(e: TickerEvent) {
+      console.log('Cool Dude!', e.type);
+    }
 
-    timer.on(TickerEvent.TICK, e => {
-      // Do cool stuff every 100 milliseconds 4EVRRRR
-    })
+    // Do cool stuff on TICK
+    ticker.on(TickerEventTypes.TICK, myCoolBiznis)
 
-    timer.start()
+    // Start the ticking
+    ticker.start() // You can listen for the START event too, ticker.on(TickerEventTypes.START, ...)
 
-    // Stop doing cool stuff, WNEVRRRR
-    timer.stop()
+    // check the ticker state if you want 
+    console.log(ticker.state) // "TICKING"
+
+    // Stop doing cool stuff on TICK, WNEVRRRR
+    ticker.stop() // You can listen for the STOP event too, ticker.on(TickerEventTypes.STOP, ...)
+
+    console.log(ticker.state) // "STOPPED"
+
+    // Remove the listener for this event
+    ticker.off(TickerEventTypes.Tick, myCoolBiznis)
