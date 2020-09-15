@@ -1,6 +1,6 @@
 {
   "name": "@ichabodcole/ticker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Cole Reed",
   "description": "A simple TICK emitter. So you can TICK when you TOCK.",
   "main": "dist/ticker.umd.js",
