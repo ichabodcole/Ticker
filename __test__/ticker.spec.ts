@@ -5,6 +5,11 @@ describe("Ticker", () => {
 
   beforeEach(() => {
     tk = new Ticker(50);
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe("constructor", () => {
@@ -50,7 +55,6 @@ describe("Ticker", () => {
       });
 
       it("should start ticking at the new interval if TICKING is in progress", () => {
-        jest.useFakeTimers();
         const mockFn = jest.fn();
         tk.on(TickerEventTypes.TICK, mockFn);
         tk.start();
@@ -64,21 +68,11 @@ describe("Ticker", () => {
 
         jest.advanceTimersByTime(100);
         expect(mockFn).toHaveBeenCalledTimes(1);
-
-        jest.useRealTimers();
       });
     });
   });
 
   describe("methods", () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
     describe("on", () => {
       it("should be defined", () => {
         expect(tk.on).toBeDefined();
