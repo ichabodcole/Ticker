@@ -5,7 +5,6 @@ import { terser } from "rollup-plugin-terser";
 import { eslint } from "rollup-plugin-eslint";
 import sourcemaps from "rollup-plugin-sourcemaps";
 import commonjs from "@rollup/plugin-commonjs";
-import ttypescript from "ttypescript";
 import path from "path";
 
 const plugins = [
@@ -15,7 +14,6 @@ const plugins = [
   commonjs(),
   eslint(),
   typescript({
-    typescript: ttypescript,
     useTsconfigDeclarationDir: true,
   }),
   progress(),

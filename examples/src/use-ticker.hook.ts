@@ -20,7 +20,7 @@ export function useTicker(ticker: Ticker): TickerHook {
     );
 
     ticker.on(TickerEventTypes.TICK, handleTick);
-  }, []);
+  }, [ticker]);
 
   function handleTick(event: TickerEvent): void {
     console.log(`Ticker: ${event.type}`);
