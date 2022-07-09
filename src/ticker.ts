@@ -5,7 +5,7 @@ import { TickerEvent } from "@/ticker-event";
 
 export class Ticker {
   private _interval: number;
-  private _intervalId: number | null = null;
+  private _intervalId: ReturnType<typeof setInterval> | null = null;
   protected _emitter: EventEmitter;
   protected _state: TickerState;
 
@@ -73,7 +73,7 @@ export class Ticker {
 
   protected _createInterval(): void {
     this._destroyInterval();
-    this._intervalId = window.setInterval(() => {
+    this._intervalId = setInterval(() => {
       this.tick();
     }, this._interval);
   }
